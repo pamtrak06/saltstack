@@ -45,5 +45,13 @@ salt-key -L
 Exécutez le syndic en mode debug pour obtenir plus d'informations :
 salt-syndic -l debug
 
+Test de connectivié entre le syndic et le master
+docker exec salt_syndic1 salt salt_master test.ping
+ERROR: No return received
+No minions matched the target. No command was sent, no jid was assigned.
+
+Vérification du status des process supervisor du syndic (salt-master, salt-syndic, salt-minion)
+docker exec salt_syndic1 supervisordctl status
+
 
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose $@
+docker-compose -p test $@

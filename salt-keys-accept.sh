@@ -1,47 +1,47 @@
 #!/bin/bash
 
-# Récupère le nom court du script (sans le chemin)
+# Get the short name of the script (without the path)
 SCRIPT_NAME=$(basename "$0")
 LOG_FILE="_logs/${SCRIPT_NAME%.*}.log"
 
-# Fonction pour logger les messages
+# Function to log messages
 log() {
     local message="$1"
     local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
     echo "[$timestamp] $message" | tee -a "$LOG_FILE"
 }
 
-# Redirige stderr vers stdout
+# Redirect stderr to stdout
 exec 2>&1
 
-# Fonction pour exécuter les commandes sur un syndic et enregistrer les résultats
+# Function to execute commands on a syndic and log the results
 run_on_syndic() {
     local syndic=$1
     local command=$2
-    log "Exécution sur $syndic : $command"
+    log "Executing on $syndic: $command"
     docker exec $syndic $command 2>&1 | tee -a "$LOG_FILE"
     log ""
 }
 
-# Début du script
-log "Opérations sur les clés des syndics - $(date)"
+# Start of the script
+log "Operations on syndic keys - $(date)"
 
 for syndic in salt_syndic1 salt_syndic2
 do
-    log "=== Opérations sur $syndic ==="
+    log "=== Operations on $syndic ==="
     
-    # Liste initiale des clés
+    # Initial key list
     run_on_syndic $syndic "salt-key -L"
     
-    # Acceptation de toutes les clés
-    log "Acceptation de toutes les clés sur $syndic"
+    # Accept all keys
+    log "Accepting all keys on $syndic"
     run_on_syndic $syndic "salt-key -A -y"
     
-    # Nouvelle liste des clés après acceptation
-    log "Nouvelle liste des clés sur $syndic après acceptation :"
+    # New key list after acceptance
+    log "New key list on $syndic after acceptance:"
     run_on_syndic $syndic "salt-key -L"
     
     log ""
 done
 
-log "Opérations terminées. Consultez $LOG_FILE pour les détails."
+log "Operations completed. Check $LOG_FILE for details."

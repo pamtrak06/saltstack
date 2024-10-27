@@ -1,41 +1,65 @@
-# docker-saltstack  (fork from https://github.com/cyface/docker-saltstack)
-Docker Compose setup to spin up a salt master and minions.
+# SaltStack Architecture with Docker Compose
 
-You can read a full article describing how to use this setup [here](https://medium.com/@timlwhite/the-simplest-way-to-learn-saltstack-cd9f5edbc967).
+This repository contains a `docker-compose.yml` file that sets up a SaltStack architecture using Docker. The configuration defines multiple services, including a Salt master, syndics, minions, and additional components like the Salt API and SaltPad. This setup allows for easy management and orchestration of systems using SaltStack's powerful configuration management capabilities.
 
-You will need a system with Docker and Docker Compose installed to use this project.
+## Overview of the Architecture
 
-Just run:
+The architecture consists of the following key components:
 
-`docker-compose up`
+- **Salt Master**: 
+  - The central server that manages the state and configuration of all minions. It communicates with syndics and minions to ensure they are in the desired state as defined in configuration files.
 
-from a checkout of this directory, and the master and minion will start up with debug logging to the console.
+- **Syndics**: 
+  - These act as intermediaries between the master and minions. They help distribute commands from the master to local minions, allowing for more scalable management across larger infrastructures.
 
-Then you can run (in a separate shell window):
+- **Salt Minion**: 
+  - The agent installed on each managed system. Minions receive commands from the master or syndics and report back their status or results.
 
-`docker-compose exec salt-master bash`
+- **Salt API**: 
+  - Provides a RESTful interface for interacting with SaltStack, allowing for integration with other applications or services.
 
-and it will log you into the command line of the salt-master server.
+- **SaltPad**: 
+  - A web-based interface for managing SaltStack configurations through the Salt API, making it easier to visualize and control your infrastructure.
 
-From that command line you can run something like:
+## Benefits of Using Docker Compose
 
-`salt '*' test.ping`
+1. **Isolation**: Each component runs in its own container, ensuring that dependencies and configurations do not interfere with one another.
 
-and in the window where you started docker compose, you will see the log output of both the master sending the command and the minion receiving the command and replying.
+2. **Scalability**: Easily scale up or down the number of minions or syndics by modifying the `docker-compose.yml` file. For example, you can increase the number of minion instances to test how your architecture handles multiple agents.
 
-[The Salt Remote Execution Tutorial](https://docs.saltstack.com/en/latest/topics/tutorials/modules.html) has some quick examples of the comamnds you can run from the master.
+3. **Simplified Management**: Docker Compose simplifies the process of starting, stopping, and managing multiple containers as a single application. You can bring up your entire SaltStack environment with a single command.
 
-Note: you will see log messages like : "Could not determine init system from command line" - those are just because salt is running in the foreground and not from an auto-startup.
+4. **Development and Testing**: This setup provides a convenient environment for developing and testing SaltStack configurations without needing to set up physical or virtual machines.
 
-The salt-master is set up to accept all minions that try to connect.  Since the network that the salt-master sees is only the docker-compose network, this means that only minions within this docker-compose service network will be able to connect (and not random other minions external to docker).
+5. **Networking**: All services are connected through a custom network (`salt-network`), facilitating seamless communication between components.
 
-#### Running multiple minions:
+## Getting Started
 
-`docker-compose up --scale salt-minion=2`
+To start the SaltStack architecture defined in this `docker-compose.yml`, follow these steps:
 
-This will start up two minions instead of just one.
+1. Ensure you have Docker and Docker Compose installed on your machine.
+2. Clone this repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+3. Build and start all services:
+   ```bash
+    ./docker-compose-init.sh
+   ```
 
-#### Host Names
-The **hostnames** match the names of the containers - so the master is `salt-master` and the minion is `salt-minion`.
+4. Access the Salt API at http://localhost:8000 and SaltPad at http://localhost:8080.
 
-If you are running more than one minion with `--scale=2`, you will need to use `docker-saltstack_salt-minion_1` and `docker-saltstack_salt-minion_2` for the minions if you want to target them individually.
+## Utilities
+- ./check-heath.sh      : check health of the SaltStack architecture
+- ./login-master.sh     : login into the Salt master container
+- ./login-syndic.sh     : login into the Salt syndic container
+- ./login-minion.sh     : login into the Salt minion container
+- ./docker-compose.sh   : run any docker-compose command
+- ./config-exports.sh   : export all salt configuration files from the containers (master, syndics, minions) into _exports
+- _templates            : contains master/minion templates
+- _logs                 : contains logs of all utils scripts
+- _exports              : contains exports of configuration files for master, syndics, minions
+
+## Conclusion
+This Docker Compose configuration provides a robust foundation for working with SaltStack in a containerized environment. It is ideal for learning, testing, and developing configuration management practices using SaltStack.

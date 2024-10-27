@@ -1,38 +1,53 @@
 #!/bin/bash
 
-# Définition des codes de couleur
+# Definition of color codes
 RESET="\033[0m"
 RED="\033[31m"
 YELLOW="\033[33m"
 GREEN="\033[32m"
 BLUE="\033[34m"
 
-# Création du nom du fichier de log
+# Creating the log file name
 SCRIPT_NAME=$(basename "$0")
 LOG_FILE="_logs/${SCRIPT_NAME%.sh}.log"
 
-# Vérification des paramètres
+# Function to display usage information
+usage() {
+    echo "Usage: $0 <minion_prefix> <number_of_minions>"
+    echo ""
+    echo "This script performs a health check on a SaltStack architecture."
+    echo "It checks the status of the master, syndics, and minions."
+    echo "The following checks are performed:"
+    echo "  - Container status: Verifies if each Docker container is running."
+    echo "  - Connectivity: Checks if each syndic and minion is connected to the master."
+    echo "  - Salt versions: Retrieves and displays the Salt versions from all components."
+    echo "  - Resource usage: Monitors CPU, memory, and disk usage for the master."
+    echo "  - Salt key status: Checks the status of Salt keys for connectivity issues."
+    echo ""
+    echo "The exported configuration files will be saved in the directory: $export_path"
+}
+
+# Checking parameters
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 <préfixe_minion> <nombre_de_minions>"
+    usage
     exit 1
 fi
 
-# Définition du préfixe pour les minions et du nombre de minions
+# Defining the prefix for minions and the number of minions
 MINION_PREFIX=$1
 NUM_MINIONS=$2
 
-# Définition des composants Salt
+# Defining Salt components
 MASTER="salt_master"
 SYNDICS=("salt_syndic1" "salt_syndic2")
 
-# Génération dynamique des noms de minions avec la nouvelle syntaxe
+# Dynamically generating minion names with the new syntax
 MINIONS=()
 for i in $(seq 1 $NUM_MINIONS); do
     MINIONS+=("${MINION_PREFIX}_salt_minion_$i")
 done
 
-
-# Fonction pour afficher des logs colorés et les écrire dans le fichier
+# Function to display colored logs and write to the log file
 log() {
     local level="$1"
     shift
@@ -61,100 +76,100 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $level: $message" >> "$LOG_FILE"
 }
 
-# Fonction pour vérifier l'état d'un conteneur
+# Function to check the status of a container
 check_container() {
     local container=$1
     if docker inspect -f '{{.State.Running}}' $container 2>/dev/null | grep -q "true"; then
-        log "INFO" "[$container] Conteneur en cours d'exécution"
+        log "INFO" "[$container] Container is running"
     else
-        log "ERROR" "[$container] Conteneur arrêté ou inexistant"
-        log "DEBUG" "Tentative de démarrage du conteneur $container..."
+        log "ERROR" "[$container] Container is stopped or nonexistent"
+        log "DEBUG" "Attempting to start container $container..."
         docker start $container
-        sleep 5  # Attendre que le conteneur démarre
+        sleep 5  # Wait for the container to start
         if docker inspect -f '{{.State.Running}}' $container 2>/dev/null | grep -q "true"; then
-            log "INFO" "[$container] Conteneur démarré avec succès"
+            log "INFO" "[$container] Container started successfully"
         else
-            log "ERROR" "[$container] Échec du démarrage du conteneur"
+            log "ERROR" "[$container] Failed to start container"
         fi
     fi
 }
 
-# Fonction pour vérifier la connectivité des syndics/minions
+# Function to check connectivity of syndics/minions
 check_connectivity() {
     local node=$1
     local node_type=$2
     if docker exec $MASTER salt "$node" test.ping --out=txt 2>/dev/null | grep -q "True"; then
-        log "INFO" "[$node] Connecté"
+        log "INFO" "[$node] Connected"
     else
-        log "WARNING" "[$node] Non connecté"
-        log "DEBUG" "Vérification des clés pour $node..."
+        log "WARNING" "[$node] Not connected"
+        log "DEBUG" "Checking keys for $node..."
         docker exec $MASTER salt-key -L | grep "$node"
         
-        log "DEBUG" "Vérification de la configuration de $node..."
+        log "DEBUG" "Checking configuration of $node..."
         docker exec $node cat /etc/salt/minion | grep "^master:"
         
-        log "DEBUG" "Vérification des logs de $node..."
+        log "DEBUG" "Checking logs of $node..."
         docker exec $node tail -n 20 /var/log/salt/$node_type
         
-        log "DEBUG" "Tentative de redémarrage des services Salt sur $node..."
+        log "DEBUG" "Attempting to restart Salt services on $node..."
         docker exec $node salt-call service.restart salt-$node_type
         docker exec $node salt-call service.restart salt-minion
         
-        sleep 10  # Attendre que les services redémarrent
+        sleep 10  # Wait for services to restart
         
-        log "DEBUG" "Nouvelle tentative de connexion pour $node..."
+        log "DEBUG" "New connection attempt for $node..."
         if docker exec $MASTER salt "$node" test.ping --out=txt 2>/dev/null | grep -q "True"; then
-            log "INFO" "[$node] Connecté après redémarrage des services"
+            log "INFO" "[$node] Connected after restarting services"
         else
-            log "ERROR" "[$node] Toujours non connecté après redémarrage des services"
-            log "DEBUG" "Vérification des versions de Salt..."
+            log "ERROR" "[$node] Still not connected after restarting services"
+            log "DEBUG" "Checking Salt versions..."
             docker exec $MASTER salt --versions-report
             docker exec $node salt --versions-report
         fi
     fi
 }
 
-log "INFO" "=== Début du test de santé ==="
+log "INFO" "=== Starting health check ==="
 
-# Vérification du master
-log "DEBUG" "=== Vérification du Master ==="
+# Checking the master
+log "DEBUG" "=== Checking the Master ==="
 check_container $MASTER
 
-# Vérification des syndics
-log "DEBUG" "=== Vérification des Syndics ==="
+# Checking the syndics
+log "DEBUG" "=== Checking the Syndics ==="
 for syndic in "${SYNDICS[@]}"; do
     check_container $syndic
     check_connectivity "$syndic" "syndic"
 done
 
-# Vérification des minions
-log "DEBUG" "=== Vérification des Minions ==="
+# Checking the minions
+log "DEBUG" "=== Checking the Minions ==="
 for minion in "${MINIONS[@]}"; do
     check_container $minion
     check_connectivity "$minion" "minion"
 done
 
-# Vérification des versions
-log "DEBUG" "=== Versions de Salt ==="
+# Checking versions
+log "DEBUG" "=== Salt Versions ==="
 docker exec $MASTER salt '*' test.version --out=txt 2>/dev/null || {
-    log "ERROR" "Impossible d'obtenir les versions de Salt"
-    log "DEBUG" "Vérification des versions sur le master..."
+    log "ERROR" "Unable to obtain Salt versions"
+    log "DEBUG" "Checking versions on the master..."
     docker exec $MASTER salt --versions-report
 }
 
-# Vérification de l'utilisation des ressources sur le master
-log "DEBUG" "=== Utilisation des ressources sur le Master ==="
-docker stats $MASTER --no-stream --format "CPU: {{.CPUPerc}}\nMémoire: {{.MemPerc}}\nDisque: {{.BlockIO}}" 2>/dev/null || {
-    log "ERROR" "Impossible d'obtenir les statistiques du conteneur master"
+# Checking resource usage on the master
+log "DEBUG" "=== Resource Usage on the Master ==="
+docker stats $MASTER --no-stream --format "CPU: {{.CPUPerc}}\nMemory: {{.MemPerc}}\nDisk: {{.BlockIO}}" 2>/dev/null || {
+    log "ERROR" "Unable to obtain statistics for master container"
 }
 
-# Vérification des clés
-log "DEBUG" "=== État des clés Salt ==="
+# Checking keys
+log "DEBUG" "=== Salt Key Status ==="
 docker exec $MASTER salt-key -L 2>/dev/null || {
-    log "ERROR" "Impossible d'obtenir l'état des clés Salt"
-    log "DEBUG" "Vérification des permissions du répertoire des clés..."
+    log "ERROR" "Unable to obtain Salt key status"
+    log "DEBUG" "Checking permissions for key directory..."
     docker exec $MASTER ls -l /etc/salt/pki/master/
 }
 
-log "INFO" "=== Test de santé terminé ==="
-log "INFO" "Les logs ont été enregistrés dans $LOG_FILE"
+log "INFO" "=== Health check completed ==="
+log "INFO" "Logs have been recorded in $LOG_FILE"

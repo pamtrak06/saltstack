@@ -53,6 +53,28 @@ services:
     depends_on:
       - salt_master
 
+  salt_api:
+    container_name: salt_api
+    image: saltstack/salt-api
+    ports:
+      - "8000:8000"
+    # volumes:
+    #   - ./salt:/etc/salt
+    depends_on:
+      - salt_master
+
+  saltpad:
+    container_name: saltpad
+    image: saltpad/saltpad
+    ports:
+      - "8080:80"
+    environment:
+      - SALTAPI_URL=http://salt-api:8000
+      - SALTAPI_USER=saltpad
+      - SALTAPI_PASS=saltpad
+    depends_on:
+      - salt_api
+
 networks:
   default:
     name: salt-network

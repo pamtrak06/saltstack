@@ -2,28 +2,40 @@
 
 export_path=_exports
 
-# Création du nom du fichier de log
+# Creating the log file name
 SCRIPT_NAME=$(basename "$0")
 LOG_FILE="_logs/${SCRIPT_NAME%.sh}.log"
 
-# Définition des codes de couleur
+# Definition of color codes
 RESET="\033[0m"
 RED="\033[31m"
 YELLOW="\033[33m"
 GREEN="\033[32m"
 BLUE="\033[34m"
 
-# Vérification des paramètres
+# Function to display usage information
+usage() {
+    echo "Usage: $0 <minion_prefix> <number_of_minions>"
+    echo ""
+    echo "This script exports Salt configuration files for a specified number of minions."
+    echo "It takes two arguments:"
+    echo "  <minion_prefix>   The prefix to use for naming minions."
+    echo "  <number_of_minions> The total number of minions to export configurations for."
+    echo ""
+    echo "The exported configuration files will be saved in the directory: $export_path"
+}
+
+# Checking parameters
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 <préfixe_minion> <nombre_de_minions>"
+    usage
     exit 1
 fi
 
-# Définition du préfixe pour les minions et du nombre de minions
+# Defining the prefix for minions and the number of minions
 MINION_PREFIX=$1
 NUM_MINIONS=$2
 
-# Fonction pour afficher des logs colorés et les écrire dans le fichier
+# Function to display colored logs and write to the log file
 log() {
     local level="$1"
     shift
@@ -52,11 +64,11 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $level: $message" >> "$LOG_FILE"
 }
 
-# Fonction d'export de fichier de configuration Salt
+# Function to export Salt configuration files
 export() {
     local node=$1
     local node_type=$2
-    log "INFO" "[$node] export de la configuration ${node_type}..."
+    log "INFO" "[$node] Exporting ${node_type} configuration..."
     docker cp ${node}:/etc/salt/${node_type} ${export_path}/${node}_${node_type}
 }
 

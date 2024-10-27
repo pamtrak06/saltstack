@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source config.sh
 # Check if the syndic number is provided
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <syndic_number>"
@@ -13,4 +13,4 @@ SYNDIC_NUMBER=$1
 SYNDIC_SERVICE="salt_syndic${SYNDIC_NUMBER}"
 
 # Execute a bash shell in the specified syndic container
-docker-compose -p test exec "$SYNDIC_SERVICE" bash
+docker-compose -p $CONFIG_MINION_PREFIX exec "$SYNDIC_SERVICE" bash

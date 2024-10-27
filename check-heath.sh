@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source config.sh
 # Definition of color codes
 RESET="\033[0m"
 RED="\033[31m"
@@ -13,29 +13,25 @@ LOG_FILE="_logs/${SCRIPT_NAME%.sh}.log"
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 <minion_prefix> <number_of_minions>"
+    echo "Usage: $0 [<minion_prefix>] [<number_of_minions>]"
     echo ""
     echo "This script performs a health check on a SaltStack architecture."
     echo "It checks the status of the master, syndics, and minions."
-    echo "The following checks are performed:"
-    echo "  - Container status: Verifies if each Docker container is running."
-    echo "  - Connectivity: Checks if each syndic and minion is connected to the master."
-    echo "  - Salt versions: Retrieves and displays the Salt versions from all components."
-    echo "  - Resource usage: Monitors CPU, memory, and disk usage for the master."
-    echo "  - Salt key status: Checks the status of Salt keys for connectivity issues."
+    echo "It takes two optional arguments:"
+    echo "  <minion_prefix>      The prefix to use for naming minions (default: 'test')."
+    echo "  <number_of_minions>  The total number of minions to check (default: 3)."
     echo ""
-    echo "The exported configuration files will be saved in the directory: $export_path"
 }
 
-# Checking parameters
-if [ $# -ne 2 ]; then
+# Check for help option
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     usage
-    exit 1
+    exit 0
 fi
 
-# Defining the prefix for minions and the number of minions
-MINION_PREFIX=$1
-NUM_MINIONS=$2
+# Setting default values
+MINION_PREFIX=${1:-$CONFIG_MINION_PREFIX}
+NUM_MINIONS=${2:-$CONFIG_NUM_MINIONS}
 
 # Defining Salt components
 MASTER="salt_master"
@@ -104,19 +100,19 @@ check_connectivity() {
         log "WARNING" "[$node] Not connected"
         log "DEBUG" "Checking keys for $node..."
         docker exec $MASTER salt-key -L | grep "$node"
-        
+
         log "DEBUG" "Checking configuration of $node..."
         docker exec $node cat /etc/salt/minion | grep "^master:"
-        
+
         log "DEBUG" "Checking logs of $node..."
         docker exec $node tail -n 20 /var/log/salt/$node_type
-        
+
         log "DEBUG" "Attempting to restart Salt services on $node..."
         docker exec $node salt-call service.restart salt-$node_type
         docker exec $node salt-call service.restart salt-minion
-        
+
         sleep 10  # Wait for services to restart
-        
+
         log "DEBUG" "New connection attempt for $node..."
         if docker exec $MASTER salt "$node" test.ping --out=txt 2>/dev/null | grep -q "True"; then
             log "INFO" "[$node] Connected after restarting services"

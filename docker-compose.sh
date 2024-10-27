@@ -1,2 +1,3 @@
 #!/bin/bash
-docker-compose -p test $@
+source config.sh
+docker-compose -p $CONFIG_MINION_PREFIX $@

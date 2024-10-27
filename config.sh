@@ -1,0 +1,4 @@
+
+#!/bin/bash
+CONFIG_MINION_PREFIX=test
+CONFIG_NUM_MINIONS=3

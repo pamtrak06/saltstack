@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source config.sh
 # Check if the minion number is provided
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <minion_number>"
@@ -13,4 +13,4 @@ MINION_NUMBER=$1
 MINION_SERVICE="salt-minion"
 
 # Execute a bash shell in the specified minion container
-docker-compose exec --index="$MINION_NUMBER" "$MINION_SERVICE" bash
+docker-compose -p $CONFIG_MINION_PREFIX exec --index="$MINION_NUMBER" "$MINION_SERVICE" bash

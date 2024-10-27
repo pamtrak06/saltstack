@@ -1,2 +1,3 @@
 #!/bin/bash
-docker-compose -p test up -d --build --scale salt_minion=3
+source config.sh
+docker-compose -p $CONFIG_MINION_PREFIX up -d --build --scale salt_minion=$CONFIG_NUM_MINIONS

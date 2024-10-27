@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source config.sh
 export_path=_exports
 
 # Creating the log file name
@@ -15,25 +15,25 @@ BLUE="\033[34m"
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 <minion_prefix> <number_of_minions>"
+    echo "Usage: $0 [<minion_prefix>] [<number_of_minions>]"
     echo ""
     echo "This script exports Salt configuration files for a specified number of minions."
-    echo "It takes two arguments:"
-    echo "  <minion_prefix>   The prefix to use for naming minions."
-    echo "  <number_of_minions> The total number of minions to export configurations for."
+    echo "It takes two optional arguments:"
+    echo "  <minion_prefix>      The prefix to use for naming minions (default: 'test')."
+    echo "  <number_of_minions>  The total number of minions to export configurations for (default: 3)."
     echo ""
     echo "The exported configuration files will be saved in the directory: $export_path"
 }
 
-# Checking parameters
-if [ $# -ne 2 ]; then
+# Check for help option
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     usage
-    exit 1
+    exit 0
 fi
 
-# Defining the prefix for minions and the number of minions
-MINION_PREFIX=$1
-NUM_MINIONS=$2
+# Setting default values
+MINION_PREFIX=${1:-$CONFIG_MINION_PREFIX}
+NUM_MINIONS=${2:-$CONFIG_NUM_MINIONS}
 
 # Function to display colored logs and write to the log file
 log() {
@@ -72,12 +72,14 @@ export() {
     docker cp ${node}:/etc/salt/${node_type} ${export_path}/${node}_${node_type}
 }
 
+# Export configurations for predefined components
 export salt_master master
 export salt_syndic1 master
 export salt_syndic1 minion
 export salt_syndic2 master
 export salt_syndic2 minion
 
+# Export configurations for dynamically generated minions
 for i in $(seq 1 $NUM_MINIONS); do
     export "${MINION_PREFIX}_salt_minion_$i" minion
 done

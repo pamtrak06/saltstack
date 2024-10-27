@@ -13,8 +13,8 @@ RUN wget -q https://repo.saltstack.com/py3/ubuntu/18.04/amd64/latest/SALTSTACK-G
     rm SALTSTACK-GPG-KEY.pub
 RUN echo "deb http://repo.saltstack.com/py3/ubuntu/18.04/amd64/latest bionic main" > /etc/apt/sources.list.d/saltstack.list
 RUN apt-get update -y && \
-    apt-get install iputils-ping net-tools -y && \
-    apt-get install salt-minion salt-ssh -y && \
+    apt-get install iputils-ping net-tools supervisor -y && \
+    apt-get install salt-master salt-minion salt-ssh salt-syndic salt-cloud salt-api -y && \
     apt-get clean all
 
 RUN mkdir -p /etc/salt/pki/master/minions
@@ -25,12 +25,13 @@ RUN mkdir -p /etc/salt/pki/minion
 RUN chown -R root:root /etc/salt/pki
 RUN chmod -R 700 /etc/salt/pki
 
+COPY docker-entrypoint-shell.sh .
+COPY docker-entrypoint-supervisor.sh .
+COPY supervisord-syndic.conf .
+
 COPY salt-configure.sh .
 RUN . ./salt-configure.sh
-
-COPY docker-entrypoint.sh .
 
 EXPOSE 4505 4506
 
 CMD ["./docker-entrypoint.sh"]
-

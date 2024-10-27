@@ -1,0 +1,5 @@
+auto_accept: True
+interface: 0.0.0.0
+port: 4505
+publish_port: 4505
+ret_port: 4506

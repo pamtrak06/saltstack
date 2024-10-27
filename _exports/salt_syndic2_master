@@ -1,0 +1,4 @@
+syndic_master: salt_master
+syndic_log_file: /var/log/salt/syndic
+syndic_pidfile: /var/run/salt-syndic.pid
+order_masters: True

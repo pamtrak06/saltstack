@@ -2,7 +2,7 @@
 
 # Récupère le nom court du script (sans le chemin)
 SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${SCRIPT_NAME%.*}.log"
+LOG_FILE="_logs/${SCRIPT_NAME%.*}.log"
 
 # Fonction pour logger les messages
 log() {

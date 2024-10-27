@@ -4,7 +4,7 @@ services:
   salt_master:
     container_name: salt_master
     build:
-      context: .
+      context: ./build
       args:
         - SALT_TYPE=MASTER
       dockerfile: Dockerfile.master
@@ -16,7 +16,7 @@ services:
   salt_syndic1:
     container_name: salt_syndic1
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.master
       args:
         - SALT_TYPE=SYNDIC
@@ -30,7 +30,7 @@ services:
   salt_syndic2:
     container_name: salt_syndic2
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.master
       args:
         - SALT_TYPE=SYNDIC
@@ -43,7 +43,7 @@ services:
     #   - "4506:4506"
   salt_minion:
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.minion
       args:
         - SALT_TYPE=MINION

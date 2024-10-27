@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# RunExécution en fonction du type de serveur Salt
+# Exécution en fonction du type de serveur Salt
 if [ "$SALT_TYPE" = "MASTER" ]; then
     echo "Starting Salt Master..."
     exec salt-master -l debug

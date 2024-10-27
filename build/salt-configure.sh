@@ -49,6 +49,8 @@ configure_syndic() {
 # Configuration en fonction du type de serveur Salt
 if [ "$SALT_TYPE" = "MASTER" ]; then
     echo "Configuring Salt Master..."
+    cp docker-entrypoint-shell.sh ./docker-entrypoint.sh
+    rm -f supervisord-syndic.conf
     configure_master
 elif [ "$SALT_TYPE" = "SYNDIC" ]; then
     if [ -z "$SALT_MASTER" ]; then
@@ -56,6 +58,9 @@ elif [ "$SALT_TYPE" = "SYNDIC" ]; then
         exit 1
     fi
     echo "Configuring Salt Syndic..."
+    cp docker-entrypoint-supervisor.sh ./docker-entrypoint.sh
+    rm -f docker-entrypoint-shell.sh
+    cp supervisord-syndic.conf /etc/supervisor/conf.d/supervisord.conf
     configure_syndic
 elif [ "$SALT_TYPE" = "MINION" ]; then
     if [ -z "$SALT_MASTER" ]; then
@@ -63,6 +68,8 @@ elif [ "$SALT_TYPE" = "MINION" ]; then
         exit 1
     fi
     echo "Configuring Salt Minion..."
+    cp docker-entrypoint-shell.sh ./docker-entrypoint.sh
+    rm -f supervisord-syndic.conf
     configure_minion
 else
     echo "Build Error: Invalid SALT_TYPE. Must be either MASTER, SYNDIC or MINION."

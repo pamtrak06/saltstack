@@ -7,6 +7,10 @@ YELLOW="\033[33m"
 GREEN="\033[32m"
 BLUE="\033[34m"
 
+# Création du nom du fichier de log
+SCRIPT_NAME=$(basename "$0")
+LOG_FILE="_logs/${SCRIPT_NAME%.sh}.log"
+
 # Vérification des paramètres
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <préfixe_minion> <nombre_de_minions>"
@@ -27,9 +31,6 @@ for i in $(seq 1 $NUM_MINIONS); do
     MINIONS+=("${MINION_PREFIX}_salt_minion_$i")
 done
 
-# Création du nom du fichier de log
-SCRIPT_NAME=$(basename "$0")
-LOG_FILE="${SCRIPT_NAME%.sh}.log"
 
 # Fonction pour afficher des logs colorés et les écrire dans le fichier
 log() {

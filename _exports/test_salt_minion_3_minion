@@ -1,0 +1,6 @@
+master:
+  - salt_syndic1
+  - salt_syndic2
+random_master: True
+master_type: failover
+id: 1d0007a22484

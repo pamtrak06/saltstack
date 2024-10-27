@@ -1,0 +1,36 @@
+FROM ubuntu:18.04
+MAINTAINER tim@cyface.com
+
+ARG SALT_TYPE
+ARG SALT_MASTER
+
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update -y
+RUN apt-get install apt-utils wget gnupg -y
+RUN wget -q https://repo.saltstack.com/py3/ubuntu/18.04/amd64/latest/SALTSTACK-GPG-KEY.pub && \
+    apt-key add SALTSTACK-GPG-KEY.pub && \
+    rm SALTSTACK-GPG-KEY.pub
+RUN echo "deb http://repo.saltstack.com/py3/ubuntu/18.04/amd64/latest bionic main" > /etc/apt/sources.list.d/saltstack.list
+RUN apt-get update -y && \
+    apt-get install iputils-ping net-tools -y && \
+    apt-get install salt-master salt-minion salt-ssh salt-syndic salt-cloud salt-api -y && \
+    apt-get clean all
+
+RUN sed -i "s|#auto_accept: False|auto_accept: True|g" /etc/salt/master
+
+# RUN mkdir -p /etc/salt/pki/master/minions
+# RUN mkdir -p /etc/salt/pki/master/minions_pre
+# RUN mkdir -p /etc/salt/pki/master/minions_rejected
+
+# RUN chown -R root:root /etc/salt/pki
+# RUN chmod -R 700 /etc/salt/pki
+
+COPY salt-configure.sh .
+RUN . ./salt-configure.sh
+
+COPY docker-entrypoint.sh .
+
+EXPOSE 4505 4506
+
+CMD ["./docker-entrypoint.sh"]

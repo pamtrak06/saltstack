@@ -1,6 +1,7 @@
 # SaltStack Architecture with Docker Compose
 
-This repository contains a `docker-compose.yml` file that sets up a SaltStack architecture using Docker. The configuration defines multiple services, including a Salt master, syndics, minions, and additional components like the Salt API and SaltPad. This setup allows for easy management and orchestration of systems using SaltStack's powerful configuration management capabilities.
+This repository contains a `docker-compose.yml` file that sets up a SaltStack architecture using Docker. The configuration defines multiple services, including a Salt master, syndics, minions, and additional components like the Salt API and SaltPad. 
+This setup is only for tests and proove of concept purpose and allows for easy management and orchestration of systems using SaltStack's powerful configuration management capabilities.
 
 ## Overview of the Architecture
 

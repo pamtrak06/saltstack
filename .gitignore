@@ -1,10 +1,5 @@
-# JetBrains Files
-.idea
+_logs/*.log
+_exports/*
+_imports/*
+_reports/*.md
 
-# File-based project format
-*.iws
-
-# IntelliJ
-out/
-
-*.log

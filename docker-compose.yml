@@ -55,9 +55,9 @@ services:
 
   salt_api:
     container_name: salt_api
-    image: saltstack/salt-api
+    image: opensuse/salt-api
     ports:
-      - "8000:8000"
+      - "6000:8000"
     # volumes:
     #   - ./salt:/etc/salt
     depends_on:
@@ -65,7 +65,7 @@ services:
 
   saltpad:
     container_name: saltpad
-    image: saltpad/saltpad
+    image: bbinet/saltpad
     ports:
       - "8080:80"
     environment:

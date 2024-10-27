@@ -4,11 +4,18 @@ set -e
 # Configuration du fichier /etc/salt/master
 configure_master() {
     mv /etc/salt/master /etc/salt/master.template
-    echo "auto_accept: True" >> /etc/salt/master
-    echo "interface: 0.0.0.0" >> /etc/salt/master
-    echo "port: 4505" >> /etc/salt/master
-    echo "publish_port: 4505" >> /etc/salt/master
-    echo "ret_port: 4506" >> /etc/salt/master
+    cp salt_master_master /etc/salt/master
+    
+    # echo "auto_accept: True" >> /etc/salt/master
+    # echo "interface: 0.0.0.0" >> /etc/salt/master
+    # echo "publish_port: 4505" >> /etc/salt/master
+    # echo "ret_port: 4506" >> /etc/salt/master
+    
+    # # configuration relative to salt-api (needed to use salt-api)
+    # echo "netapi:">> /etc/salt/master
+    # echo "  rest_cherrypy:">> /etc/salt/master
+    # echo "    port: 8000">> /etc/salt/master
+    # echo "    host: 0.0.0.0">> /etc/salt/master
 }
 
 # Configuration du fichier /etc/salt/minion pour le minion
@@ -23,6 +30,7 @@ configure_minion() {
     echo "  - salt_syndic2" >> /etc/salt/minion
     echo "random_master: True" >> /etc/salt/minion
     echo "master_type: failover" >> /etc/salt/minion
+
     #echo "id: minionname" >> /etc/salt/minion
     # echo "master_port: 4506" >> /etc/salt/minion
     # echo "user: root" >> /etc/salt/minion

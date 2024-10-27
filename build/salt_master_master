@@ -1,0 +1,25 @@
+# Enable auto-acceptance of minion keys
+auto_accept: True
+
+# NetAPI configuration for RESTful API access
+netapi:
+  rest_cherrypy:
+    port: 8000          # Port on which the API will listen
+    host: 0.0.0.0      # Listen on all interfaces
+    # Optionally enable authentication
+    # auth:
+    #   type: basic
+    #   username: your_username
+    #   password: your_password
+
+# Other essential configurations (optional)
+interface: 0.0.0.0      # Listen on all interfaces
+publish_port: 4505      # Port for publishing messages
+ret_port: 4506          # Port for minion results
+pki_dir: /etc/salt/pki  # Directory for PKI keys
+
+file_roots:
+  base:
+    - /srv/salt         # Directory where state files are located
+
+log_level: info         # Logging level

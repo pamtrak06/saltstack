@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose exec salt_master bash
+docker-compose -p test exec salt_master bash

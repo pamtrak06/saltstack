@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose exec salt_syndic1 bash
+docker-compose -p test exec salt_syndic1 bash

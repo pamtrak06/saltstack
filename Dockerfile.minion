@@ -17,12 +17,13 @@ RUN apt-get update -y && \
     apt-get install salt-minion salt-ssh -y && \
     apt-get clean all
 
-# RUN mkdir -p /etc/salt/pki/master/minions
-# RUN mkdir -p /etc/salt/pki/master/minions_pre
-# RUN mkdir -p /etc/salt/pki/master/minions_rejected
+RUN mkdir -p /etc/salt/pki/master/minions
+RUN mkdir -p /etc/salt/pki/master/minions_pre
+RUN mkdir -p /etc/salt/pki/master/minions_rejected
+RUN mkdir -p /etc/salt/pki/minion
 
-# RUN chown -R root:root /etc/salt/pki
-# RUN chmod -R 700 /etc/salt/pki
+RUN chown -R root:root /etc/salt/pki
+RUN chmod -R 700 /etc/salt/pki
 
 COPY salt-configure.sh .
 RUN . ./salt-configure.sh

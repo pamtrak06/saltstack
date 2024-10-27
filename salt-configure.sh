@@ -4,6 +4,7 @@ set -e
 # Configuration du fichier /etc/salt/master
 configure_master() {
     mv /etc/salt/master /etc/salt/master.template
+    echo "auto_accept: True" >> /etc/salt/master
     echo "interface: 0.0.0.0" >> /etc/salt/master
     echo "port: 4505" >> /etc/salt/master
     echo "publish_port: 4505" >> /etc/salt/master
@@ -13,8 +14,16 @@ configure_master() {
 # Configuration du fichier /etc/salt/minion pour le minion
 configure_minion() {
     mv /etc/salt/minion /etc/salt/minion.template
-    # sed -i "s|#master: salt|master: salt_master|g" /etc/salt/minion
-    echo "master: salt_master" >> /etc/salt/minion
+    #echo "master: salt_master" >> /etc/salt/minion
+
+    # spécifier plusieurs syndics comme masters dans le fichier /etc/salt/minion
+    # répartition de la charge entre les deux syndics (options random_master, master_type)
+    echo "master:" >> /etc/salt/minion
+    echo "  - salt_syndic1" >> /etc/salt/minion
+    echo "  - salt_syndic2" >> /etc/salt/minion
+    echo "random_master: True" >> /etc/salt/minion
+    echo "master_type: failover" >> /etc/salt/minion
+    #echo "id: minionname" >> /etc/salt/minion
     # echo "master_port: 4506" >> /etc/salt/minion
     # echo "user: root" >> /etc/salt/minion
     # echo "pki_dir: /etc/salt/pki/minion" >> /etc/salt/minion
@@ -30,7 +39,11 @@ configure_syndic() {
     echo "syndic_master: $SALT_MASTER" >> /etc/salt/master
     echo "syndic_log_file: /var/log/salt/syndic" >> /etc/salt/master
     echo "syndic_pidfile: /var/run/salt-syndic.pid" >> /etc/salt/master
-    echo "master: localhost" >> /etc/salt/minion
+    echo "order_masters: True" >> /etc/salt/master
+    
+    mv /etc/salt/minion /etc/salt/minion.template
+    echo "master: $SALT_MASTER" >> /etc/salt/minion
+    #echo "id: syndicname" >> /etc/salt/minion
 }
 
 # Configuration en fonction du type de serveur Salt

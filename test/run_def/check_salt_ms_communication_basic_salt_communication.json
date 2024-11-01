@@ -1,0 +1,8 @@
+{
+    "command": "./docker-compose.sh exec salt_syndic1 salt-call test.ping",
+    "path": "{RUN_PATH}", 
+    "expected_return_type": "output_message",
+    "expected_value": "True",
+    "timeout": 3000,
+    "description": "Check basic Salt communication: This should return True if Salt is functioning correctly on the syndic."
+}

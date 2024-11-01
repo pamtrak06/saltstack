@@ -1,0 +1,8 @@
+{
+    "command": "./docker-compose.sh exec salt_master cat /etc/salt/master",
+    "path": "{RUN_PATH}", 
+    "expected_return_type": "output_message",
+    "expected_value": "order_masters: True",
+    "timeout": 1000,
+    "description": "Check master configuration: Ensure that order_masters is set to True on the master."
+}

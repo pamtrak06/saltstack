@@ -3,3 +3,9 @@ _exports/*
 _imports/*
 _reports/*.md
 
+test/_logs/*.log
+test/_logs/*.txt
+test/_outputs/*.csv
+test/_outputs/*.md
+test/venv
+

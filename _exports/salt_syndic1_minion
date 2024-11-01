@@ -1,2 +1,4 @@
 master: salt_master
+file_client: remote
+pki_dir: /etc/salt/pki/minion
 id: salt_syndic1

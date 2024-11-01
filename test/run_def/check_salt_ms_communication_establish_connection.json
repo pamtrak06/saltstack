@@ -1,0 +1,8 @@
+{
+    "command": "./docker-compose.sh exec salt_syndic1 salt-syndic -d",
+    "path": "{RUN_PATH}", 
+    "expected_return_type": "return_code",
+    "expected_value": 0,
+    "timeout": 5000,
+    "description": "Establish a connection from the syndic to the master manually."
+}

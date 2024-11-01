@@ -1,0 +1,8 @@
+{
+    "command": "ls /etc/hosts",
+    "path": "NA",
+    "expected_return_type": "return_code",
+    "expected_value": 0,
+    "timeout": 1000,
+    "description": "Check return code for command : ls /etc/hosts."
+}

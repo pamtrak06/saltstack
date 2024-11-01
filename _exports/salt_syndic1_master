@@ -1,4 +1,8 @@
 syndic_master: salt_master
-syndic_log_file: /var/log/salt/syndic
-syndic_pidfile: /var/run/salt-syndic.pid
+syndic_master_port: 4506
 order_masters: True
+syndic_wait: 30
+file_roots:
+  base:
+    - /srv/salt
+id: salt_syndic1

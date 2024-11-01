@@ -21,7 +21,6 @@ configure_master() {
 # Configuration du fichier /etc/salt/minion pour le minion
 configure_minion() {
     mv /etc/salt/minion /etc/salt/minion.template
-    #echo "master: salt_master" >> /etc/salt/minion
 
     # spécifier plusieurs syndics comme masters dans le fichier /etc/salt/minion
     # répartition de la charge entre les deux syndics (options random_master, master_type)
@@ -44,14 +43,22 @@ configure_minion() {
 # Configuration des fichiers /etc/salt/master pour le syndic
 configure_syndic() {
     mv /etc/salt/master /etc/salt/master.template
+    #echo "master: localhost" >> /etc/salt/master
     echo "syndic_master: $SALT_MASTER" >> /etc/salt/master
-    echo "syndic_log_file: /var/log/salt/syndic" >> /etc/salt/master
-    echo "syndic_pidfile: /var/run/salt-syndic.pid" >> /etc/salt/master
+    echo "syndic_master_port: 4506" >> /etc/salt/master
+    # echo "syndic_log_file: /var/log/salt/syndic" >> /etc/salt/master
+    # echo "syndic_pidfile: /var/run/salt-syndic.pid" >> /etc/salt/master
     echo "order_masters: True" >> /etc/salt/master
+    echo "syndic_wait: 30" >> /etc/salt/master
+    echo "file_roots:" >> /etc/salt/master
+    echo "  base:" >> /etc/salt/master
+    echo "    - /srv/salt" >> /etc/salt/master
     
     mv /etc/salt/minion /etc/salt/minion.template
     echo "master: $SALT_MASTER" >> /etc/salt/minion
-    #echo "id: syndicname" >> /etc/salt/minion
+    echo "file_client: remote" >> /etc/salt/minion
+    echo "pki_dir: /etc/salt/pki/minion" >> /etc/salt/minion
+    # echo "id: $SALT_HOSTNAME" > /etc/salt/minion
 }
 
 # Configuration en fonction du type de serveur Salt

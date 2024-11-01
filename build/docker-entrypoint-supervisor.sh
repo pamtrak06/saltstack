@@ -6,10 +6,11 @@ if [ "$SALT_TYPE" = "MASTER" ]; then
     echo "Salt Master configuration preprocessing..."
 elif [ "$SALT_TYPE" = "SYNDIC" ]; then
     echo "Salt Syndic configuration preprocessing..."
+    echo "id: $SALT_HOSTNAME" >> /etc/salt/master
     echo "id: $SALT_HOSTNAME" >> /etc/salt/minion
 elif [ "$SALT_TYPE" = "MINION" ]; then
     echo "Salt Minion configuration preprocessing..."
-    echo "id: $(hostname)" >> /etc/salt/minion
+    echo "id: $SALT_HOSTNAME" >> /etc/salt/minion
 else
     echo "Runtime Error: Invalid SALT_TYPE. Must be either MASTER, SYNDIC or MINION."
     exit 1

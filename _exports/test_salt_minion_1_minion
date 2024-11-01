@@ -3,4 +3,4 @@ master:
   - salt_syndic2
 random_master: True
 master_type: failover
-id: bd436c380a38
+id: effa409100cd

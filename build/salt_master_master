@@ -1,6 +1,22 @@
 # Enable auto-acceptance of minion keys
 auto_accept: True
 
+# Enables ordered communication between multiple Salt masters like (syndics)
+order_masters: True
+
+# This defines how long the master should wait for syndics to respond.
+syndic_wait: 30
+
+# This allows the master to failover to other syndics if one is unresponsive.
+syndic_failover: random
+
+# This ensures that all events are forwarded from syndics to the master.
+syndic_forward_all_events: True
+
+# This defines where the master should look for files. Typically, it includes the 'roots' backend.
+fileserver_backend:
+  - roots
+
 # NetAPI configuration for RESTful API access
 netapi:
   rest_cherrypy:
@@ -16,10 +32,17 @@ netapi:
 interface: 0.0.0.0      # Listen on all interfaces
 publish_port: 4505      # Port for publishing messages
 ret_port: 4506          # Port for minion results
+worker_threads: 10      # number of worker thread
 pki_dir: /etc/salt/pki  # Directory for PKI keys
 
+# This defines the location of Salt states files.
 file_roots:
   base:
     - /srv/salt         # Directory where state files are located
 
-log_level: info         # Logging level
+# This defines the location of Pillar data.
+pillar_roots:
+  base:
+    - /srv/pillar
+
+log_level: debug         # Logging level

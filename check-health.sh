@@ -415,3 +415,6 @@ log INFO "--- Health check completed ---"
 echo -e "$REPORT_CONTENT" > "$REPORT_FILE"
 
 log INFO "--- Report generated at: $REPORT_FILE ---"
+
+
+# Faire un fichier de script indépendant pour chaque test

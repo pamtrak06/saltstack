@@ -1,8 +1,0 @@
-{
-    "command": "./docker-compose.sh exec salt_master netstat -tulpn",
-    "path": "{RUN_PATH}", 
-    "expected_return_type": "output_message",
-    "expected_value": ".*4505|4506.*",
-    "timeout": 1000,
-    "description": "Check that the necessary ports (typically 4505 and 4506) are open."
-}

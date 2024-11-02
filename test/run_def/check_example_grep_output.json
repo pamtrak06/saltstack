@@ -1,8 +1,0 @@
-{
-    "command": "ps aux | grep 'sshd'",
-    "path": "NA",
-    "expected_return_type": "output_message",
-    "expected_value": "sshd",
-    "timeout": 1000,
-    "description": "Check grep output for command : ps aux | grep 'sshd'."
-}

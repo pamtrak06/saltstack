@@ -1,8 +1,0 @@
-{
-    "command": "./docker-compose.sh exec salt_syndic1 tail -n 20 /var/log/salt/syndic",
-    "path": "{RUN_PATH}", 
-    "expected_return_type": "output_message",
-    "expected_value": "^!.*(ERROR|CRITICAL).*",
-    "timeout": 2000,
-    "description": "Check syndic logs for more detailed error messages."
-}

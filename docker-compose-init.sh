@@ -29,7 +29,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Start the Docker containers with docker-compose
-docker-compose -p $CONFIG_MINION_PREFIX up -d --build --scale salt_minion=$CONFIG_NUM_MINIONS
+docker-compose -p $CONFIG_COMPOSE_PREFIX up -d --build --scale salt_minion=$CONFIG_NUM_MINIONS
 
 # Wait for a few seconds to ensure containers are up
 sleep 10

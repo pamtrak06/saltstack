@@ -1,3 +1,3 @@
 #!/bin/bash
 source config.sh
-docker-compose -p $CONFIG_MINION_PREFIX $@
+docker-compose -p $CONFIG_COMPOSE_PREFIX $@

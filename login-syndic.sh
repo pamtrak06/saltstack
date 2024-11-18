@@ -13,4 +13,4 @@ SYNDIC_NUMBER=$1
 SYNDIC_SERVICE="salt_syndic${SYNDIC_NUMBER}"
 
 # Execute a bash shell in the specified syndic container
-docker-compose -p $CONFIG_MINION_PREFIX exec "$SYNDIC_SERVICE" bash
+docker-compose -p $CONFIG_COMPOSE_PREFIX exec "$SYNDIC_SERVICE" bash

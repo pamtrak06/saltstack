@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
 MAINTAINER tim@cyface.com
 
-ARG SALT_TYPE
-ARG SALT_MASTER
+ARG SALT_NODE_TYPE
+ARG SALT_MASTER_NAME
 
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections

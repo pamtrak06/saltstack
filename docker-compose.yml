@@ -6,10 +6,10 @@ services:
     build:
       context: ./build
       args:
-        - SALT_TYPE=MASTER
+        - SALT_NODE_TYPE=MASTER
       dockerfile: Dockerfile.master
     environment:
-      - SALT_TYPE=MASTER
+      - SALT_NODE_TYPE=MASTER
     # ports:
     #   - "4505:4505"
     #   - "4506:4506"
@@ -19,10 +19,10 @@ services:
       context: ./build
       dockerfile: Dockerfile.master
       args:
-        - SALT_TYPE=SYNDIC
-        - SALT_MASTER=salt_master
+        - SALT_NODE_TYPE=SYNDIC
+        - SALT_MASTER_NAME=salt_master
     environment:
-      - SALT_TYPE=SYNDIC
+      - SALT_NODE_TYPE=SYNDIC
       - SALT_HOSTNAME=salt_syndic1
     # ports:
     #   - "4505:4505"
@@ -33,10 +33,10 @@ services:
       context: ./build
       dockerfile: Dockerfile.master
       args:
-        - SALT_TYPE=SYNDIC
-        - SALT_MASTER=salt_master
+        - SALT_NODE_TYPE=SYNDIC
+        - SALT_MASTER_NAME=salt_master
     environment:
-      - SALT_TYPE=SYNDIC
+      - SALT_NODE_TYPE=SYNDIC
       - SALT_HOSTNAME=salt_syndic2
     # ports:
     #   - "4505:4505"
@@ -46,10 +46,10 @@ services:
       context: ./build
       dockerfile: Dockerfile.minion
       args:
-        - SALT_TYPE=MINION
-        - SALT_MASTER=salt_master
+        - SALT_NODE_TYPE=MINION
+        - SALT_MASTER_NAME=salt_master
     environment:
-      - SALT_TYPE=MINION
+      - SALT_NODE_TYPE=MINION
     depends_on:
       - salt_master
 

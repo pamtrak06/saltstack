@@ -6,15 +6,15 @@ This project utilizes Docker Compose to set up a SaltStack architecture consisti
 
 - **salt_master**: 
   - The central component of the SaltStack architecture. It manages the state of the system and communicates with all other components.
-  - Built from `Dockerfile.master` with the argument `SALT_TYPE=MASTER`.
+  - Built from `Dockerfile.master` with the argument `SALT_NODE_TYPE=MASTER`.
 
 - **salt_syndic1** and **salt_syndic2**: 
   - These services act as intermediaries between the master and the minions, allowing for distributed management.
-  - Both are built from the same Dockerfile as the master but are configured with `SALT_TYPE=SYNDIC` and reference the master service.
+  - Both are built from the same Dockerfile as the master but are configured with `SALT_NODE_TYPE=SYNDIC` and reference the master service.
 
 - **salt_minion**: 
   - Represents the agent that executes commands sent by the master or syndics.
-  - Built using `Dockerfile.minion` with the argument `SALT_TYPE=MINION`.
+  - Built using `Dockerfile.minion` with the argument `SALT_NODE_TYPE=MINION`.
 
 - **salt_api**: 
   - Provides a RESTful API interface for interacting with SaltStack.

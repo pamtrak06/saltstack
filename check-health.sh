@@ -21,12 +21,12 @@ REPORT_FILE="_reports/health_check_report_$TIMESTAMP.md"
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 [<minion_prefix>] [<number_of_minions>]"
+    echo "Usage: $0 [<compose_prefix>] [<number_of_minions>]"
     echo ""
     echo "This script performs a health check on a SaltStack architecture."
     echo "It checks the status of the master, syndics, and minions."
     echo "It takes two optional arguments:"
-    echo "  <minion_prefix>      The prefix to use for naming minions (default: 'test')."
+    echo "  <compose_prefix>      The prefix to use for naming minions (default: 'test')."
     echo "  <number_of_minions>  The total number of minions to check (default: 3)."
     echo ""
 }
@@ -49,7 +49,7 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 # Setting default values
-MINION_PREFIX=${1:-$CONFIG_MINION_PREFIX}
+COMPOSE_PREFIX=${1:-$CONFIG_COMPOSE_PREFIX}
 NUM_MINIONS=${2:-$CONFIG_NUM_MINIONS}
 
 # Defining Salt components
@@ -59,7 +59,7 @@ SYNDICS=("salt_syndic1" "salt_syndic2")
 # Dynamically generating minion names with the new syntax
 MINIONS=()
 for i in $(seq 1 $NUM_MINIONS); do
-    MINIONS+=("${MINION_PREFIX}_salt_minion_$i")
+    MINIONS+=("${COMPOSE_PREFIX}_salt_minion_$i")
 done
 
 # Initialize report content

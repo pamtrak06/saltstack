@@ -44,7 +44,7 @@ configure_minion() {
 configure_syndic() {
     mv /etc/salt/master /etc/salt/master.template
     #echo "master: localhost" >> /etc/salt/master
-    echo "syndic_master: $SALT_MASTER" >> /etc/salt/master
+    echo "syndic_master: $SALT_MASTER_NAME" >> /etc/salt/master
     echo "syndic_master_port: 4506" >> /etc/salt/master
     # echo "syndic_log_file: /var/log/salt/syndic" >> /etc/salt/master
     # echo "syndic_pidfile: /var/run/salt-syndic.pid" >> /etc/salt/master
@@ -55,21 +55,21 @@ configure_syndic() {
     echo "    - /srv/salt" >> /etc/salt/master
     
     mv /etc/salt/minion /etc/salt/minion.template
-    echo "master: $SALT_MASTER" >> /etc/salt/minion
+    echo "master: $SALT_MASTER_NAME" >> /etc/salt/minion
     echo "file_client: remote" >> /etc/salt/minion
     echo "pki_dir: /etc/salt/pki/minion" >> /etc/salt/minion
     # echo "id: $SALT_HOSTNAME" > /etc/salt/minion
 }
 
 # Configuration en fonction du type de serveur Salt
-if [ "$SALT_TYPE" = "MASTER" ]; then
+if [ "$SALT_NODE_TYPE" = "MASTER" ]; then
     echo "Configuring Salt Master..."
     cp docker-entrypoint-shell.sh ./docker-entrypoint.sh
     rm -f supervisord-syndic.conf
     configure_master
-elif [ "$SALT_TYPE" = "SYNDIC" ]; then
-    if [ -z "$SALT_MASTER" ]; then
-        echo "Build Error: SALT_MASTER environment variable is required for SYNDIC configuration."
+elif [ "$SALT_NODE_TYPE" = "SYNDIC" ]; then
+    if [ -z "$SALT_MASTER_NAME" ]; then
+        echo "Build Error: SALT_MASTER_NAME environment variable is required for SYNDIC configuration."
         exit 1
     fi
     echo "Configuring Salt Syndic..."
@@ -77,9 +77,9 @@ elif [ "$SALT_TYPE" = "SYNDIC" ]; then
     rm -f docker-entrypoint-shell.sh
     cp supervisord-syndic.conf /etc/supervisor/conf.d/supervisord.conf
     configure_syndic
-elif [ "$SALT_TYPE" = "MINION" ]; then
-    if [ -z "$SALT_MASTER" ]; then
-        echo "Build Error: SALT_MASTER environment variable is required for MINION configuration."
+elif [ "$SALT_NODE_TYPE" = "MINION" ]; then
+    if [ -z "$SALT_MASTER_NAME" ]; then
+        echo "Build Error: SALT_MASTER_NAME environment variable is required for MINION configuration."
         exit 1
     fi
     echo "Configuring Salt Minion..."
@@ -87,6 +87,6 @@ elif [ "$SALT_TYPE" = "MINION" ]; then
     rm -f supervisord-syndic.conf
     configure_minion
 else
-    echo "Build Error: Invalid SALT_TYPE. Must be either MASTER, SYNDIC or MINION."
+    echo "Build Error: Invalid SALT_NODE_TYPE. Must be either MASTER, SYNDIC or MINION."
     exit 1
 fi
